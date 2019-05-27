@@ -1,6 +1,7 @@
 from django.test import TestCase
 from .models import TechType, Product, Review
-from .views import index, gettypes, getproducts
+from .views import index, gettypes, getproducts, newProduct
+from .forms import TechTypeForm
 from django.urls import reverse
 from django.contrib.auth.models import User
 
@@ -75,3 +76,17 @@ class GetProductsTest(TestCase):
     def test_number_of_reviews(self):
         reviews=Review.objects.filter(product=self.prod).count()
         self.assertEqual(reviews, 2)
+
+#Form tests
+class TechType_Form_Test(TestCase):
+    def test_typeform_is_valid(self):
+        form=TechTypeForm(data={'techtypename': "type1", 'techtypedescription' : "some type"})
+        self.assertTrue(form.is_valid())
+
+    def test_typeform_minus_descript(self):
+        form=TechTypeForm(data={'techtypename': "type1"})
+        self.assertTrue(form.is_valid())
+
+    def test_typeform_empty(self):
+        form=TechTypeForm(data={'techtypename': ""})
+        self.assertFalse(form.is_valid())
