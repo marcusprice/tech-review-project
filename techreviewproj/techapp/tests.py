@@ -90,3 +90,19 @@ class TechType_Form_Test(TestCase):
     def test_typeform_empty(self):
         form=TechTypeForm(data={'techtypename': ""})
         self.assertFalse(form.is_valid())
+
+class New_Product_authentication_test(TestCase):
+    def setUp(self):
+        self.test_user=User.objects.create_user(username='testuser1', password='P@ssw0rd1')
+        self.type=TechType.objects.create(techtypename='laptop')
+
+    def test_redirect_if_not_logged_in(self):
+        response=self.client.get(reverse('newproduct'))
+        self.assertRedirects(response, '/accounts/login/?next=/techapp/newProduct/')
+
+    def test_Logged_in_uses_correct_template(self):
+        login=self.client.login(username='testuser1', password='P@ssw0rd1')
+        response=self.client.get(reverse('newproduct'))
+        self.assertEqual(str(response.context['user']), 'testuser1')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'techapp/newproduct.html')
